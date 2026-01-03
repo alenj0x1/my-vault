@@ -1,0 +1,6 @@
+@MyVault.WebApi_HostAddress = http://localhost:5089
+
+GET {{MyVault.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
