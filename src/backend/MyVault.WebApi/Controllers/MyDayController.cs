@@ -7,5 +7,6 @@ namespace MyVault.WebApi.Controllers
     [ApiController]
     public class MyDayController : ControllerBase
     {
+
     }
 }
