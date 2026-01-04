@@ -16,5 +16,8 @@
     <ItemGroup>
     <Folder Include="Extensions\" />
   </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\MyVault.Application\MyVault.Application.csproj" />
+    </ItemGroup>
 
 </Project>
