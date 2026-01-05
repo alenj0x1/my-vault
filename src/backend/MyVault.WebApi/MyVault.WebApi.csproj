@@ -18,6 +18,8 @@
   </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\MyVault.Application\MyVault.Application.csproj" />
+      <ProjectReference Include="..\MyVault.Domain\MyVault.Domain.csproj" />
+      <ProjectReference Include="..\MyVault.Infrastructure\MyVault.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,7 @@
 using MyVault.Application.Interfaces.Services;
 using MyVault.Application.Services;
+using MyVault.Domain.Interfaces.Repositories;
+using MyVault.Infrastructure.Persistence.Sqlite.Repositories;
 
 namespace MyVault.WebApi.Extensions;
 
@@ -11,6 +13,9 @@ public static class ServicesExtension
         services.AddControllers();
         services.AddMemoryCache();
 
+        SQLitePCL.Batteries.Init();
+
         services.AddScoped<IMyDayService, MyDayService>();
+        services.AddTransient<IDayRepository, DayRepository>();
     }
 }

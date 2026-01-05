@@ -1,12 +1,12 @@
 using System;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using Microsoft.VisualBasic;
 using MyVault.Application.Interfaces.Services;
 using MyVault.Application.Models.Requests;
 using MyVault.Application.Models.Responses;
 using MyVault.Domain.Entities;
 using MyVault.Domain.Enums;
+using MyVault.Shared;
 using MyVault.Shared.Constants;
 
 namespace MyVault.Application.Services;
@@ -37,7 +37,7 @@ public class MyDayService(IMemoryCache memoryCache, IConfiguration configuration
         });
     }
 
-    public async Task<List<Day>> InitData()
+    public async Task<List<Day>> InitDataDeprecated()
     {
         try
         {
@@ -48,13 +48,13 @@ public class MyDayService(IMemoryCache memoryCache, IConfiguration configuration
             var currentDay = 0;
             Day? day = null;
 
-            var lines = await File.ReadAllLinesAsync(configuration[ConfigurationProperty.DAY_FILE_PATH]
-                ?? throw new Exception(ExceptionMessage.CONFIGURATION_PROPERTY_NOT_FOUND(ConfigurationProperty.DAY_FILE_PATH)));
+            var lines = await File.ReadAllLinesAsync(configuration[ConfigurationProperty.DAY_FILE_PATH_DEPRECATED]
+                ?? throw new Exception(ExceptionMessage.CONFIGURATION_PROPERTY_NOT_FOUND(ConfigurationProperty.DAY_FILE_PATH_DEPRECATED)));
             foreach (var line in lines)
             {
                 currentLine++;
 
-                var seperatorDate = configuration[ConfigurationProperty.DAY_FILE_SEPARATOR_DATE] ?? "-";
+                var seperatorDate = configuration[ConfigurationProperty.DAY_FILE_SEPARATOR_DATE_DEPRECATED] ?? "-";
                 if (line.StartsWith(seperatorDate))
                 {
                     currentDay++;
@@ -77,17 +77,14 @@ public class MyDayService(IMemoryCache memoryCache, IConfiguration configuration
                     {
                         Id = currentDay,
                         Date = dateParsed,
-                        Items = [],
-                        Errors = dateParsed is null
-                            ? new Dictionary<string, string>() { { "Date", ExceptionMessage.INCORRECT_FORMAT } }
-                            : []
+                        Items = []
                     };
                 }
 
                 Dictionary<string, string> properties = [];
-                foreach (var item in line.Split(configuration[ConfigurationProperty.DAY_FILE_SEPARATOR_ITEM] ?? ";"))
+                foreach (var item in line.Split(configuration[ConfigurationProperty.DAY_FILE_SEPARATOR_ITEM_DEPRECATED] ?? ";"))
                 {
-                    var property = item.Split(configuration[ConfigurationProperty.DAY_FILE_SEPARATOR_PROPERTY] ?? "=");
+                    var property = item.Split(configuration[ConfigurationProperty.DAY_FILE_SEPARATOR_PROPERTY_DEPRECATED] ?? "=");
                     if (property.Length != 2) continue;
 
                     properties.Add(property[0], property[1]);
@@ -95,13 +92,20 @@ public class MyDayService(IMemoryCache memoryCache, IConfiguration configuration
 
                 if (day is not null && properties.Count > 0)
                 {
+
+                    Parser.EnumToString(properties.GetValueOrDefault("identifier") ?? "", out DayIdentifier identifier);
+                    Parser.EnumToString(properties.GetValueOrDefault("type") ?? "", out DayType type);
+                    Parser.EnumToString(properties.GetValueOrDefault("subType") ?? "", out DayType subType);
+
                     day.Items.Add(new DayItem
                     {
                         Id = currentLine,
-                        Identifier = DayIdentifier.Coding,
-                        Time = properties["time"],
-                        Type = DayType.English,
-                        Note = properties["note"]
+                        DayId = currentDay,
+                        Identifier = (int)identifier,
+                        Time = properties.GetValueOrDefault("time") ?? "",
+                        Type = (int)type,
+                        SubType = subType.CompareTo(DayType.UnespecifiedOrUnknown) == 0 ? null : (int)subType,
+                        Note = properties.GetValueOrDefault("note") ?? ""
                     });
                 }
 

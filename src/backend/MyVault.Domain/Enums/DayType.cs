@@ -2,6 +2,7 @@ namespace MyVault.Domain.Enums;
 
 public enum DayType
 {
+    UnespecifiedOrUnknown = 0,
     Draw = 1,
     Vitamins = 2,
     English = 3,
