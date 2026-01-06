@@ -7,7 +7,7 @@ namespace MyVault.Application.Interfaces.Services;
 
 public interface IMyDayService
 {
-    GenericResponse<Day> Create(CreateDayRequest model);
+    Task<GenericResponse<Day?>> Create(CreateDayRequest model);
     GenericResponse<List<Day>> Get(int id);
     GenericResponse<Day?> Get(BaseRequest model);
     Task InitCache(List<Day> data);

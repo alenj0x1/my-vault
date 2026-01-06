@@ -13,14 +13,21 @@ public class Initializer(string connectionString)
             using var connection = new SqliteConnection(connectionString);
             await connection.OpenAsync();
 
-            using var tx = await connection.BeginTransactionAsync();
 
+            using var cmd = connection.CreateCommand();
+            cmd.CommandText = """
+                PRAGMA journal_mode = WAL;
+                PRAGMA synchronous = NORMAL;
+            """;
+            await cmd.ExecuteNonQueryAsync();
+
+            using var tx = await connection.BeginTransactionAsync();
             await connection.ExecuteAsync("""
                 create table if not exists days (
                     id integer not null primary key,
                     date date not null
                 )
-            """);
+            """, transaction: tx);
 
             await connection.ExecuteAsync("""
                 create table if not exists days_items (
@@ -32,7 +39,7 @@ public class Initializer(string connectionString)
                     sub_type integer,
                     note text not null
                 )
-            """);
+            """, transaction: tx);
 
             await tx.CommitAsync();
 

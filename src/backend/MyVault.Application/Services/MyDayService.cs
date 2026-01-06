@@ -6,16 +6,41 @@ using MyVault.Application.Models.Requests;
 using MyVault.Application.Models.Responses;
 using MyVault.Domain.Entities;
 using MyVault.Domain.Enums;
+using MyVault.Domain.Interfaces.Repositories;
 using MyVault.Shared;
 using MyVault.Shared.Constants;
 
 namespace MyVault.Application.Services;
 
-public class MyDayService(IMemoryCache memoryCache, IConfiguration configuration) : IMyDayService
+public class MyDayService(
+    IMemoryCache memoryCache,
+    IConfiguration configuration,
+    IDayRepository dayRepository
+) : IMyDayService
 {
-    public GenericResponse<Day> Create(CreateDayRequest model)
+    private readonly IDayRepository _dayRepository = dayRepository;
+
+    public async Task<GenericResponse<Day?>> Create(CreateDayRequest model)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var day = await _dayRepository.Create(new Day
+            {
+                Date = model.Date
+            });
+
+            return new GenericResponse<Day?>
+            {
+                Data = day
+            };
+        }
+        catch
+        {
+            return new GenericResponse<Day?>
+            {
+                Data = null
+            };
+        }
     }
 
     public GenericResponse<List<Day>> Get(int id)

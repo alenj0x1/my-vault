@@ -4,6 +4,7 @@ using MyVault.Domain.Interfaces.Repositories;
 using MyVault.Infrastructure.Persistence.Sqlite;
 using MyVault.Shared.Constants;
 using MyVault.WebApi.Extensions;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 await builder.Services.AddServicesAsync(builder.Configuration);
@@ -16,6 +17,7 @@ app.MapControllers();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference("/docs");
 }
 
 var initializer = new Initializer(builder.Configuration[ConfigurationProperty.CONNECTION_STRING_DATABASE]
