@@ -1,12 +1,13 @@
-using MyVault.Application.Interfaces.Services;
-using MyVault.Application.Services;
-using MyVault.Domain.Interfaces.Repositories;
 using MyVault.Infrastructure.Persistence.Sqlite;
 using MyVault.Shared.Constants;
 using MyVault.WebApi.Extensions;
 using Scalar.AspNetCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
+
 await builder.Services.AddServicesAsync(builder.Configuration);
 
 var app = builder.Build();
