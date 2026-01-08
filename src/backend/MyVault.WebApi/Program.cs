@@ -1,3 +1,5 @@
+using MyVault.Application.Interfaces.Services;
+using MyVault.Domain.Interfaces.Repositories;
 using MyVault.Infrastructure.Persistence.Sqlite;
 using MyVault.Shared.Constants;
 using MyVault.WebApi.Extensions;
@@ -26,10 +28,13 @@ var initializer = new Initializer(builder.Configuration[ConfigurationProperty.CO
 await initializer.ExecuteAsync();
 
 // Add data from file
-// var provider = app.Services.CreateScope().ServiceProvider;
+var provider = app.Services.CreateScope().ServiceProvider;
 
-// var myDayRepository = provider.GetRequiredService<IDayRepository>();
-// var myDayService = provider.GetRequiredService<IMyDayService>();
+var myDayRepository = provider.GetRequiredService<IDayRepository>();
+var myDayService = provider.GetRequiredService<IMyDayService>();
+
+var day = await myDayRepository.Get(1);
+var days = await myDayRepository.Get();
 
 // var data = await myDayService.InitDataDeprecated();
 

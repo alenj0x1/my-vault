@@ -80,22 +80,82 @@ public class DayRepository : IDayRepository
         }
     }
 
-    public bool Delete(int id)
+    public Task<bool> Delete(int id)
     {
         throw new NotImplementedException();
     }
 
-    public Day? Get(int id)
+    public async Task<Day?> Get(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var day = await connection.QuerySingleAsync<Day?>("""
+                select id, date from days where id = @Id
+            """, new
+            {
+                Id = id
+            });
+
+            if (day is not null)
+            {
+
+                var items = await connection.QueryAsync<DayItem>("""
+                    select id, day_id, identifier, time, type, sub_type, note from days_items where day_id = @DayId
+                """, new
+                {
+                    DayId = day.Id
+                });
+
+                day.Items = [.. items];
+            }
+
+            return day;
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
     }
 
-    public List<Day> Get(int limit = 100, int skip = 0)
+    public async Task<List<Day>> Get(int limit = 100, int offset = 0)
     {
-        throw new NotImplementedException();
+        try
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var days = (await connection.QueryAsync<Day>("""
+                select id, date from days limit @Limit offset @Offset
+            """, new
+            {
+                Limit = limit,
+                Offset = offset
+            })).ToList();
+
+            foreach (var day in days)
+            {
+                var items = await connection.QueryAsync<DayItem>("""
+                    select id, day_id, identifier, time, type, sub_type, note from days_items where day_id = @DayId
+                """, new
+                {
+                    DayId = day.Id
+                });
+
+                day.Items = [.. items];
+            }
+
+            return days;
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
     }
 
-    public Day? Update(Day day)
+    public Task<Day?> Update(Day day)
     {
         throw new NotImplementedException();
     }
