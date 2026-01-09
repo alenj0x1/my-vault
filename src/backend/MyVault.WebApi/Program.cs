@@ -1,7 +1,16 @@
+using MyVault.Application.Interfaces.Services;
+using MyVault.Domain.Interfaces.Repositories;
+using MyVault.Infrastructure.Persistence.Sqlite;
+using MyVault.Shared.Constants;
 using MyVault.WebApi.Extensions;
+using Scalar.AspNetCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddServices(builder.Configuration);
+
+builder.Host.UseSerilog();
+
+await builder.Services.AddServicesAsync(builder.Configuration);
 
 var app = builder.Build();
 
@@ -11,7 +20,41 @@ app.MapControllers();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference("/docs");
 }
+
+var initializer = new Initializer(builder.Configuration[ConfigurationProperty.CONNECTION_STRING_DATABASE]
+    ?? throw new Exception(ExceptionMessage.CONFIGURATION_PROPERTY_NOT_FOUND(ConfigurationProperty.CONNECTION_STRING_DATABASE)));
+await initializer.ExecuteAsync();
+
+// Add data from file
+var provider = app.Services.CreateScope().ServiceProvider;
+
+var myDayRepository = provider.GetRequiredService<IDayRepository>();
+var myDayService = provider.GetRequiredService<IMyDayService>();
+
+var day = await myDayRepository.Get(1);
+var days = await myDayRepository.Get();
+
+if (day is not null)
+{
+    day.Date = DateTime.Now;
+    var updateADay = await myDayRepository.Update(day);
+}
+
+var deleteADay = await myDayRepository.Delete(22);
+
+// var data = await myDayService.InitDataDeprecated();
+
+// foreach (var day in data)
+// {
+//     await myDayRepository.Create(day);
+
+//     foreach (var item in day.Items)
+//     {
+//         await myDayRepository.CreateItem(item);
+//     }
+// }
 
 app.UseHttpsRedirection();
 
