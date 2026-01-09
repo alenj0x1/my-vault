@@ -36,6 +36,14 @@ var myDayService = provider.GetRequiredService<IMyDayService>();
 var day = await myDayRepository.Get(1);
 var days = await myDayRepository.Get();
 
+if (day is not null)
+{
+    day.Date = DateTime.Now;
+    var updateADay = await myDayRepository.Update(day);
+}
+
+var deleteADay = await myDayRepository.Delete(22);
+
 // var data = await myDayService.InitDataDeprecated();
 
 // foreach (var day in data)

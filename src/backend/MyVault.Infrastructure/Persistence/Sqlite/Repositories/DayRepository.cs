@@ -80,9 +80,26 @@ public class DayRepository : IDayRepository
         }
     }
 
-    public Task<bool> Delete(int id)
+    public async Task<bool> Delete(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var query = await connection.ExecuteAsync("""
+                delete from days where id = @Id
+            """, new
+            {
+                Id = id
+            });
+
+            return query > 0;
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
     }
 
     public async Task<Day?> Get(int id)
@@ -155,8 +172,31 @@ public class DayRepository : IDayRepository
         }
     }
 
-    public Task<Day?> Update(Day day)
+    public async Task<Day?> Update(Day day)
     {
-        throw new NotImplementedException();
+        try
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var query = await connection.ExecuteAsync("""
+                update days set date = @Date where id = @Id
+            """, new
+            {
+                Id = day.Id,
+                Date = day.Date
+            });
+
+            if (query > 0)
+            {
+                return await Get(day.Id);
+            }
+
+            return day;
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
     }
 }
