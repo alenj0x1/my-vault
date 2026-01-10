@@ -7,9 +7,9 @@ namespace MyVault.Application.Interfaces.Services;
 
 public interface IMyDayService
 {
-    Task<GenericResponse<Day?>> Create(CreateDayRequest model);
-    GenericResponse<List<Day>> Get(int id);
-    GenericResponse<Day?> Get(BaseRequest model);
-    Task InitCache(List<Day> data);
-    Task<List<Day>> InitDataDeprecated();
+    Task<GenericResponse<Day?>> CreateAsync(CreateDayRequest model);
+    Task<GenericResponse<Day?>> GetAsync(int id);
+    Task<GenericResponse<List<Day>>> GetAsync(BaseRequest model);
+    Task InitCacheAsync(List<Day> data);
+    Task<List<Day>> InitDataAsyncDeprecated();
 }

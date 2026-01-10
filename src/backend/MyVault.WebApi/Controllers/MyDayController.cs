@@ -19,7 +19,7 @@ namespace MyVault.WebApi.Controllers
         {
             try
             {
-                var day = await _myDayService.Create(model);
+                var day = await _myDayService.CreateAsync(model);
                 if (day.Data is null)
                 {
                     Response.StatusCode = (int)HttpStatusCode.BadRequest;

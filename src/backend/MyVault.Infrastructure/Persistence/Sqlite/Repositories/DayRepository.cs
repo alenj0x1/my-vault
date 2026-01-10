@@ -17,7 +17,7 @@ public class DayRepository : IDayRepository
             ?? throw new Exception(ExceptionMessage.CONFIGURATION_PROPERTY_NOT_FOUND(ConfigurationProperty.CONNECTION_STRING_DATABASE));
     }
 
-    public async Task<Day> Create(Day day)
+    public async Task<Day> CreateAsync(Day day)
     {
         try
         {
@@ -44,7 +44,7 @@ public class DayRepository : IDayRepository
         }
     }
 
-    public async Task<DayItem> CreateItem(DayItem item)
+    public async Task<DayItem> CreateItemAsync(DayItem item)
     {
         try
         {
@@ -80,7 +80,7 @@ public class DayRepository : IDayRepository
         }
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         try
         {
@@ -102,7 +102,7 @@ public class DayRepository : IDayRepository
         }
     }
 
-    public async Task<Day?> Get(int id)
+    public async Task<Day?> GetAsync(int id)
     {
         try
         {
@@ -137,7 +137,7 @@ public class DayRepository : IDayRepository
         }
     }
 
-    public async Task<List<Day>> Get(int limit = 100, int offset = 0)
+    public async Task<List<Day>> GetAsync(int limit = 100, int offset = 0)
     {
         try
         {
@@ -172,7 +172,7 @@ public class DayRepository : IDayRepository
         }
     }
 
-    public async Task<Day?> Update(Day day)
+    public async Task<Day?> UpdateAsync(Day day)
     {
         try
         {
@@ -189,7 +189,7 @@ public class DayRepository : IDayRepository
 
             if (query > 0)
             {
-                return await Get(day.Id);
+                return await GetAsync(day.Id);
             }
 
             return day;
