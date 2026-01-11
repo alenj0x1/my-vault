@@ -20,11 +20,11 @@ public class MyDayService(
 {
     private readonly IDayRepository _dayRepository = dayRepository;
 
-    public async Task<GenericResponse<Day?>> Create(CreateDayRequest model)
+    public async Task<GenericResponse<Day?>> CreateAsync(CreateDayRequest model)
     {
         try
         {
-            var day = await _dayRepository.Create(new Day
+            var day = await _dayRepository.CreateAsync(new Day
             {
                 Date = model.Date
             });
@@ -43,17 +43,47 @@ public class MyDayService(
         }
     }
 
-    public GenericResponse<List<Day>> Get(int id)
+    public async Task<GenericResponse<Day?>> GetAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var day = await _dayRepository.GetAsync(id);
+
+            return new GenericResponse<Day?>
+            {
+                Data = day
+            };
+        }
+        catch
+        {
+            return new GenericResponse<Day?>
+            {
+                Data = null
+            };
+        }
     }
 
-    public GenericResponse<Day?> Get(BaseRequest model)
+    public async Task<GenericResponse<List<Day>>> GetAsync(BaseRequest model)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var days = await _dayRepository.GetAsync(limit: model.Limit, offset: model.Offset);
+
+            return new GenericResponse<List<Day>>
+            {
+                Data = days
+            };
+        }
+        catch
+        {
+            return new GenericResponse<List<Day>>
+            {
+                Data = null
+            };
+        }
     }
 
-    public async Task InitCache(List<Day> data)
+    public async Task InitCacheAsync(List<Day> data)
     {
         await memoryCache.GetOrCreateAsync(CacheKey.DAY_DATA, async (cacheEntry) =>
         {
@@ -62,7 +92,7 @@ public class MyDayService(
         });
     }
 
-    public async Task<List<Day>> InitDataDeprecated()
+    public async Task<List<Day>> InitDataAsyncDeprecated()
     {
         try
         {

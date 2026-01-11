@@ -33,16 +33,16 @@ var provider = app.Services.CreateScope().ServiceProvider;
 var myDayRepository = provider.GetRequiredService<IDayRepository>();
 var myDayService = provider.GetRequiredService<IMyDayService>();
 
-var day = await myDayRepository.Get(1);
-var days = await myDayRepository.Get();
+var day = await myDayRepository.GetAsync(1);
+var days = await myDayRepository.GetAsync();
 
 if (day is not null)
 {
     day.Date = DateTime.Now;
-    var updateADay = await myDayRepository.Update(day);
+    var updateADay = await myDayRepository.UpdateAsync(day);
 }
 
-var deleteADay = await myDayRepository.Delete(22);
+var deleteADay = await myDayRepository.DeleteAsync(22);
 
 // var data = await myDayService.InitDataDeprecated();
 
