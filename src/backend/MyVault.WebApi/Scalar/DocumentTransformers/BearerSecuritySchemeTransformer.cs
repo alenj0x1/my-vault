@@ -9,6 +9,7 @@ namespace MyVault.WebApi.Scalar.DocumentTransformers;
 public class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider authenticationSchemeProvider) : IOpenApiDocumentTransformer
 {
     private readonly IAuthenticationSchemeProvider _authenticationSchemeProvider = authenticationSchemeProvider;
+    private const string AuthorizationTagName = "Authorization";
 
 
     public async Task TransformAsync(OpenApiDocument document, OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
@@ -31,7 +32,7 @@ public class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider authe
             document.Components ??= new OpenApiComponents();
             document.Components.SecuritySchemes = requirements;
 
-            foreach (var operation in document.Paths.Values.SelectMany(x => x.Operations).Where(x => x.Value.Tags.Any(y => y.Name == "Authorization")))
+            foreach (var operation in document.Paths.Values.SelectMany(x => x.Operations).Where(x => x.Value.Tags.Any(y => y.Name == AuthorizationTagName)))
             {
                 operation.Value.Security.Add(new OpenApiSecurityRequirement
                 {
@@ -44,6 +45,13 @@ public class BearerSecuritySchemeTransformer(IAuthenticationSchemeProvider authe
                         }
                     }] = Array.Empty<string>()
                 });
+
+                operation.Value.Tags.Remove(operation.Value.Tags.FirstOrDefault(x => x.Name == AuthorizationTagName));
+            }
+
+            if (document.Tags.Any(x => x.Name == AuthorizationTagName))
+            {
+                document.Tags.Remove(document.Tags.FirstOrDefault(x => x.Name == AuthorizationTagName));
             }
         }
     }
