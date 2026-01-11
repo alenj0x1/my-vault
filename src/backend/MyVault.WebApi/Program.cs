@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using MyVault.Application.Interfaces.Services;
 using MyVault.Domain.Interfaces.Repositories;
 using MyVault.Infrastructure.Persistence.Sqlite;
@@ -20,7 +21,15 @@ app.MapControllers();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference("/docs");
+    app.MapScalarApiReference("/api-reference", options =>
+    {
+        options.ShowDeveloperTools = DeveloperToolsVisibility.Never;
+        options.Title = "my-vault | API Reference";
+        options.Authentication = new ScalarAuthenticationOptions
+        {
+            PreferredSecuritySchemes = ["Bearer"]
+        };
+    });
 }
 
 var initializer = new Initializer(builder.Configuration[ConfigurationProperty.CONNECTION_STRING_DATABASE]
@@ -57,5 +66,8 @@ var deleteADay = await myDayRepository.DeleteAsync(22);
 // }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Run();

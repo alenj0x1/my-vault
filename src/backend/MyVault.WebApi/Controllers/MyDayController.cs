@@ -1,5 +1,6 @@
+using System.ComponentModel;
 using System.Net;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyVault.Application.Interfaces.Services;
 using MyVault.Application.Models.Requests;
@@ -15,6 +16,10 @@ namespace MyVault.WebApi.Controllers
         private readonly IMyDayService _myDayService = myDayService;
 
         [HttpPost("create")]
+        [Tags("MyDay", "Authorization")]
+        [Authorize]
+        [ProducesResponseType(statusCode: 201, type: typeof(Day))]
+        [ProducesResponseType(404)]
         public async Task<GenericResponse<Day?>> CreateAsync([FromBody] CreateDayRequest model)
         {
             try
@@ -37,6 +42,9 @@ namespace MyVault.WebApi.Controllers
         }
 
         [HttpGet("all")]
+        [Tags("MyDay", "Authorization")]
+        [ProducesResponseType(statusCode: 200, type: typeof(List<Day>))]
+        [ProducesResponseType(404)]
         public async Task<GenericResponse<List<Day>>> GetAllAsync([FromQuery] BaseRequest model)
         {
             try
@@ -59,6 +67,9 @@ namespace MyVault.WebApi.Controllers
         }
 
         [HttpGet(":id")]
+        [Tags("MyDay", "Authorization")]
+        [ProducesResponseType(statusCode: 201, type: typeof(Day))]
+        [ProducesResponseType(404)]
         public async Task<GenericResponse<Day?>> GetByIdAsync(int id)
         {
             try
