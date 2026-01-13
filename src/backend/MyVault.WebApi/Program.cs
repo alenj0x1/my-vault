@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using MyVault.Application.Interfaces.Services;
+using MyVault.Domain.Entities;
 using MyVault.Domain.Interfaces.Repositories;
 using MyVault.Infrastructure.Persistence.Sqlite;
 using MyVault.Shared.Constants;
@@ -49,6 +50,20 @@ if (day is not null)
 {
     day.Date = DateTime.Now;
     var updateADay = await myDayRepository.UpdateAsync(day);
+
+    var itemCreated = await myDayRepository.CreateItemAsync(new DayItem
+    {
+        DayId = day.Id,
+        Identifier = 1,
+        Type = 1,
+        Note = "this is a time created for tests",
+        Time = DateTime.Now.ToString()
+    });
+
+    itemCreated.Note = itemCreated.Note = " updated";
+    var updateItem = await myDayRepository.UpdateItemAsync(itemCreated);
+
+    var deleteItem = await myDayRepository.DeleteItemAsync(itemCreated.Id);
 }
 
 var deleteADay = await myDayRepository.DeleteAsync(22);

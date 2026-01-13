@@ -44,42 +44,6 @@ public class DayRepository : IDayRepository
         }
     }
 
-    public async Task<DayItem> CreateItemAsync(DayItem item)
-    {
-        try
-        {
-            using var connection = new SqliteConnection(_connectionString);
-            await connection.OpenAsync();
-
-            using var tx = await connection.BeginTransactionAsync();
-
-            var query = await connection.QuerySingleAsync<DayItem>("""
-                insert into days_items (day_id, identifier, time, type, note, sub_type)
-                values (@DayId, @Identifier, @Time, @Type, @Note, @SubType)
-                returning id
-            """, new
-            {
-                DayId = item.DayId,
-                Identifier = item.Identifier,
-                Time = item.Time,
-                Type = item.Type,
-                Note = item.Note,
-                SubType = item.SubType,
-            }, transaction: tx
-                );
-
-            await tx.CommitAsync();
-
-            item.Id = query.Id;
-
-            return item;
-        }
-        catch (System.Exception)
-        {
-            throw;
-        }
-    }
-
     public async Task<bool> DeleteAsync(int id)
     {
         try
@@ -193,6 +157,100 @@ public class DayRepository : IDayRepository
             }
 
             return day;
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
+    }
+
+    public async Task<DayItem> CreateItemAsync(DayItem item)
+    {
+        try
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var tx = await connection.BeginTransactionAsync();
+
+            var query = await connection.QuerySingleAsync<DayItem>("""
+                insert into days_items (day_id, identifier, time, type, note, sub_type)
+                values (@DayId, @Identifier, @Time, @Type, @Note, @SubType)
+                returning id
+            """, new
+            {
+                DayId = item.DayId,
+                Identifier = item.Identifier,
+                Time = item.Time,
+                Type = item.Type,
+                Note = item.Note,
+                SubType = item.SubType,
+            }, transaction: tx
+                );
+
+            await tx.CommitAsync();
+
+            item.Id = query.Id;
+
+            return item;
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
+    }
+
+    public async Task<DayItem?> UpdateItemAsync(DayItem item)
+    {
+        try
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var query = await connection.ExecuteAsync("""
+                update days_items 
+                set 
+                    day_id = @DayId,
+                    identifier = @Identifier,
+                    type = @Type,
+                    sub_type = @SubType,
+                    note = @Note,
+                    time = @Time
+                where id = @Id
+            """, new
+            {
+                Id = item.Id,
+                DayId = item.DayId,
+                Identifier = item.Identifier,
+                Type = item.Type,
+                SubType = item.SubType,
+                Note = item.Note,
+                Time = item.Time
+            });
+
+            return item;
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
+    }
+
+    public async Task<bool> DeleteItemAsync(int id)
+    {
+        try
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var query = await connection.ExecuteAsync("""
+                delete from days_items where id = @Id
+            """, new
+            {
+                Id = id
+            });
+
+            return query > 0;
         }
         catch (System.Exception)
         {
