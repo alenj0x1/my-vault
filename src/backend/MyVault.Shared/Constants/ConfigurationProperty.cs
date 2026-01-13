@@ -9,4 +9,5 @@ public static class ConfigurationProperty
     public const string DAY_FILE_SEPARATOR_DATE_DEPRECATED = "DayFileSeparatorDateDeprecated";
     public const string DAY_FILE_SEPARATOR_ITEM_DEPRECATED = "DayFileSeparatorItemDeprecated";
     public const string DAY_FILE_SEPARATOR_PROPERTY_DEPRECATED = "DayFileSeparatorPropertyDeprecated";
+    public const string JWT_PRIVATE_KEY = "JWT:PrivateKey";
 }

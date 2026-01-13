@@ -4,7 +4,7 @@ namespace MyVault.Domain.Entities;
 
 public class DayItem
 {
-    public required int Id { get; set; }
+    public int Id { get; set; } = 0;
     public required int DayId { get; set; }
     public required int Identifier { get; set; }
     public required string Time { get; set; }
