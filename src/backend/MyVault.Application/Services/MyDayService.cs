@@ -112,7 +112,7 @@ public class MyDayService(
         }
     }
 
-    public async Task<GenericResponse<DayItem?>> UpdateItemAsync(int id, UpdateDayItemRequest model)
+    public Task<GenericResponse<DayItem?>> UpdateItemAsync(int id, UpdateDayItemRequest model)
     {
         throw new NotImplementedException();
     }

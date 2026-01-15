@@ -200,6 +200,54 @@ public class DayRepository : IDayRepository
         }
     }
 
+    public async Task<bool> IfExistsItemAsync(int id)
+    {
+        try
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var query = await connection.ExecuteScalarAsync<bool>("""
+                select exists (
+                    select 1
+                    from days_items
+                    where id = @Id
+                )
+            """, new
+            {
+                Id = id
+            });
+
+            return query;
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
+    }
+
+    public async Task<DayItem?> GetItemAsync(int id)
+    {
+        try
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var day = await connection.QuerySingleAsync<DayItem?>("""
+                select * from days_items where id = @Id
+            """, new
+            {
+                Id = id
+            });
+
+            return day;
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
+    }
+
     public async Task<DayItem?> UpdateItemAsync(DayItem item)
     {
         try
