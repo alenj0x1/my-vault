@@ -112,9 +112,35 @@ public class MyDayService(
         }
     }
 
-    public Task<GenericResponse<DayItem?>> UpdateItemAsync(int id, UpdateDayItemRequest model)
+    public async Task<GenericResponse<DayItem?>> UpdateItemAsync(int id, UpdateDayItemRequest model)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var item = await _dayRepository.GetItemAsync(id)
+                ?? throw new Exception(ExceptionMessage.NOT_EXISTS("item"));
+
+            var repositoryData = await _dayRepository.UpdateItemAsync(new DayItem
+            {
+                DayId = model.DayId ?? item.DayId,
+                Identifier = model.Identifier ?? item.Identifier,
+                Time = model.Time ?? item.Time,
+                Type = model.Type ?? item.Type,
+                SubType = model.SubType ?? item.SubType,
+                Note = model.Note ?? item.Note,
+            });
+
+            return new GenericResponse<DayItem?>
+            {
+                Data = repositoryData
+            };
+        }
+        catch
+        {
+            return new GenericResponse<DayItem?>
+            {
+                Data = null
+            };
+        }
     }
 
     public async Task<GenericResponse<bool>> RemoveItemAsync(int id)
