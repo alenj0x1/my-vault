@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using MyVault.Application.Interfaces.Services;
 using MyVault.Application.Models.Requests;
+using MyVault.Application.Models.Requests.Day;
 using MyVault.Application.Models.Responses;
 using MyVault.Domain.Entities;
 using MyVault.Domain.Enums;
@@ -79,6 +80,84 @@ public class MyDayService(
             return new GenericResponse<List<Day>>
             {
                 Data = null
+            };
+        }
+    }
+
+    public async Task<GenericResponse<DayItem>> CreateItemAsync(CreateDayItemRequest model)
+    {
+        try
+        {
+            var repositoryData = await _dayRepository.CreateItemAsync(new DayItem
+            {
+                DayId = model.DayId,
+                Identifier = model.Identifier,
+                Time = model.Time ?? "",
+                Type = model.Type,
+                SubType = model.SubType,
+                Note = model.Note,
+            });
+
+            return new GenericResponse<DayItem>
+            {
+                Data = repositoryData
+            };
+        }
+        catch
+        {
+            return new GenericResponse<DayItem>
+            {
+                Data = null
+            };
+        }
+    }
+
+    public async Task<GenericResponse<DayItem?>> UpdateItemAsync(int id, UpdateDayItemRequest model)
+    {
+        try
+        {
+            var item = await _dayRepository.GetItemAsync(id)
+                ?? throw new Exception(ExceptionMessage.NOT_EXISTS("item"));
+
+            var repositoryData = await _dayRepository.UpdateItemAsync(new DayItem
+            {
+                DayId = model.DayId ?? item.DayId,
+                Identifier = model.Identifier ?? item.Identifier,
+                Time = model.Time ?? item.Time,
+                Type = model.Type ?? item.Type,
+                SubType = model.SubType ?? item.SubType,
+                Note = model.Note ?? item.Note,
+            });
+
+            return new GenericResponse<DayItem?>
+            {
+                Data = repositoryData
+            };
+        }
+        catch
+        {
+            return new GenericResponse<DayItem?>
+            {
+                Data = null
+            };
+        }
+    }
+
+    public async Task<GenericResponse<bool>> RemoveItemAsync(int id)
+    {
+        try
+        {
+            var repositoryData = await _dayRepository.DeleteItemAsync(id);
+            return new GenericResponse<bool>
+            {
+                Data = repositoryData
+            };
+        }
+        catch
+        {
+            return new GenericResponse<bool>
+            {
+                Data = false
             };
         }
     }

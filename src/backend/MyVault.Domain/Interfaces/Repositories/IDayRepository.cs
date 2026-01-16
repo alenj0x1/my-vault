@@ -10,6 +10,8 @@ public interface IDayRepository
     public Task<Day?> UpdateAsync(Day day);
     public Task<bool> DeleteAsync(int id);
     public Task<DayItem> CreateItemAsync(DayItem item);
+    public Task<bool> IfExistsItemAsync(int id);
+    public Task<DayItem?> GetItemAsync(int id);
     public Task<DayItem?> UpdateItemAsync(DayItem item);
     public Task<bool> DeleteItemAsync(int id);
 }
