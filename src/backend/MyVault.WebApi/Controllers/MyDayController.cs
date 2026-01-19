@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyVault.Application.Interfaces.Services;
 using MyVault.Application.Models.Requests;
+using MyVault.Application.Models.Requests.Day;
 using MyVault.Application.Models.Responses;
 using MyVault.Domain.Entities;
 
@@ -43,6 +44,7 @@ namespace MyVault.WebApi.Controllers
 
         [HttpGet("all")]
         [Tags("MyDay", "Authorization")]
+        [Authorize]
         [ProducesResponseType(statusCode: 200, type: typeof(List<Day>))]
         [ProducesResponseType(404)]
         public async Task<GenericResponse<List<Day>>> GetAllAsync([FromQuery] BaseRequest model)
@@ -66,9 +68,10 @@ namespace MyVault.WebApi.Controllers
             }
         }
 
-        [HttpGet(":id")]
+        [HttpGet("{id}")]
         [Tags("MyDay", "Authorization")]
-        [ProducesResponseType(statusCode: 201, type: typeof(Day))]
+        [Authorize]
+        [ProducesResponseType(statusCode: 200, type: typeof(Day))]
         [ProducesResponseType(404)]
         public async Task<GenericResponse<Day?>> GetByIdAsync(int id)
         {
@@ -83,6 +86,84 @@ namespace MyVault.WebApi.Controllers
 
                 Response.StatusCode = (int)HttpStatusCode.OK;
                 return day;
+            }
+            catch
+            {
+
+                throw;
+            }
+        }
+
+        [HttpPost("items/create")]
+        [Tags("MyDay", "MyDay/Items", "Authorization")]
+        [Authorize]
+        [ProducesResponseType(statusCode: 201, type: typeof(Day))]
+        [ProducesResponseType(404)]
+        public async Task<GenericResponse<DayItem>> CreateItemAsync([FromBody] CreateDayItemRequest model)
+        {
+            try
+            {
+                var dayItem = await _myDayService.CreateItemAsync(model);
+                if (dayItem.Data is null)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return dayItem;
+                }
+
+                Response.StatusCode = (int)HttpStatusCode.OK;
+                return dayItem;
+            }
+            catch
+            {
+
+                throw;
+            }
+        }
+
+        [HttpPut("items/update/{id}")]
+        [Tags("MyDay", "MyDay/Items", "Authorization")]
+        [Authorize]
+        [ProducesResponseType(statusCode: 200, type: typeof(Day))]
+        [ProducesResponseType(404)]
+        public async Task<GenericResponse<DayItem?>> UpdateItemAsync([FromBody] UpdateDayItemRequest model, int id)
+        {
+            try
+            {
+                var dayItem = await _myDayService.UpdateItemAsync(id, model);
+                if (dayItem.Data is null)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return dayItem;
+                }
+
+                Response.StatusCode = (int)HttpStatusCode.OK;
+                return dayItem;
+            }
+            catch
+            {
+
+                throw;
+            }
+        }
+
+        [HttpPut("items/remove/{id}")]
+        [Tags("MyDay", "MyDay/Items", "Authorization")]
+        [Authorize]
+        [ProducesResponseType(statusCode: 200, type: typeof(Day))]
+        [ProducesResponseType(404)]
+        public async Task<GenericResponse<bool>> RemoveItemAsync(int id)
+        {
+            try
+            {
+                var dayItem = await _myDayService.RemoveItemAsync(id);
+                if (!dayItem.Data)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return dayItem;
+                }
+
+                Response.StatusCode = (int)HttpStatusCode.OK;
+                return dayItem;
             }
             catch
             {
