@@ -9,4 +9,4 @@ A simple app to save what I've done during the day and keep track of it.
 
 This is a currently project in development.
 
-Created by alenj0x1.
+Created by alenj0x1..
